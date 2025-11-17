@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
 
 const userController = {
   // @desc    Register a new user
@@ -35,7 +36,7 @@ const userController = {
       });
     } else {
       try {
-        const user = await User.findByEmail(email);
+        let user = await User.findByEmail(email);
         if (user) {
           errors.push({ msg: 'Email is already registered' });
           res.render('register', {
@@ -67,10 +68,56 @@ const userController = {
   // @route   POST /users/login
   // @access  Public
   login: (req, res, next) => {
-    passport.authenticate('local', {
-      successRedirect: '/dashboard',
-      failureRedirect: '/users/login',
-      failureFlash: true,
+    const redirect_uri = req.body.redirect_uri || req.query.redirect_uri;
+
+    passport.authenticate('local', (err, user, info) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        req.flash('error_msg', info.message);
+        let failureRedirect = '/users/login';
+        if (redirect_uri) {
+          failureRedirect += `?redirect_uri=${encodeURIComponent(redirect_uri)}`;
+        }
+        return res.redirect(failureRedirect);
+      }
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        
+        const payload = {
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email
+          },
+        };
+
+        jwt.sign(
+          payload,
+          process.env.JWT_SECRET,
+          { expiresIn: 3600 },
+          (err, token) => {
+            if (err) {
+              req.flash('error_msg', 'Could not generate token.');
+              return res.redirect('/users/login');
+            }
+
+            if (redirect_uri) {
+              const separator = redirect_uri.includes('?') ? '&' : '?';
+              res.redirect(`${redirect_uri}${separator}token=${token}`);
+            } else {
+              // Fallback: redirect to the main app's dashboard
+              const APP_URL = process.env.APP_URL || 'http://localhost:2000';
+              const returnTo = `${APP_URL}/dashboard`;
+              const callbackUrl = `${APP_URL}/auth/callback?returnTo=${encodeURIComponent(returnTo)}&token=${token}`;
+              res.redirect(callbackUrl);
+            }
+          }
+        );
+      });
     })(req, res, next);
   },
 
@@ -90,14 +137,16 @@ const userController = {
   // @route   GET /users/login
   // @access  Public
   getLogin: (req, res) => {
-    res.render('login');
+    const { redirect_uri } = req.query;
+    res.render('login', { redirect_uri });
   },
 
   // @desc    Display register page
   // @route   GET /users/register
   // @access  Public
   getRegister: (req, res) => {
-    res.render('register');
+    const { redirect_uri } = req.query;
+    res.render('register', { redirect_uri });
   },
 };
 

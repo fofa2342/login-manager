@@ -1,6 +1,6 @@
 # Login Manager
 
-This is a user authentication and management system built with Node.js and Express.js. It serves as a foundational boilerplate for applications requiring user registration, login, and session management.
+This is a user authentication and management system built with Node.js and Express.js. It serves as a foundational boilerplate for applications requiring user registration, login, and session management. It provides both a traditional web interface and a REST API for authentication.
 
 ## Prerequisites
 
@@ -45,7 +45,6 @@ DB_HOST=localhost
 DB_USER=your_db_user
 DB_PASS=your_db_password
 DB_NAME=your_db_name
-DB_PORT=3306
 ```
 
 ### 5. Run the application
@@ -62,10 +61,65 @@ DB_PORT=3306
 
 The application will be running at `http://localhost:5000`.
 
+## API Usage
+
+This application provides a REST API for user authentication.
+
+### Register a new user
+
+*   **Endpoint:** `POST /api/register`
+*   **Body:**
+    ```json
+    {
+      "name": "John Doe",
+      "email": "john@example.com",
+      "password": "password123"
+    }
+    ```
+*   **Example:**
+    ```bash
+    curl -X POST -H "Content-Type: application/json" -d '{
+      "name": "John Doe",
+      "email": "john@example.com",
+      "password": "password123"
+    }' http://localhost:5000/api/register
+    ```
+*   **Response:**
+    ```json
+    {
+      "msg": "User registered successfully."
+    }
+    ```
+
+### Login
+
+*   **Endpoint:** `POST /api/login`
+*   **Body:**
+    ```json
+    {
+      "email": "john@example.com",
+      "password": "password123"
+    }
+    ```
+*   **Example:**
+    ```bash
+    curl -X POST -H "Content-Type: application/json" -d '{
+      "email": "john@example.com",
+      "password": "password123"
+    }' http://localhost:5000/api/login
+    ```
+*   **Response:**
+    ```json
+    {
+      "msg": "Login successful"
+    }
+    ```
+
 ## Key Technologies
 
 *   **Backend:** Node.js, Express.js
 *   **Templating:** EJS (Embedded JavaScript)
 *   **Database:** MySQL (using `mysql2` driver)
 *   **Authentication:** Passport.js (with `passport-local` strategy)
-*   **Dependencies:** `bcryptjs` for password hashing, `connect-flash` for flash messages, `dotenv` for environment variables, `express-session` for session management.
+*   **Dependencies:** `bcryptjs` for password hashing, `connect-flash` for flash messages, `dotenv` for environment variables, `express-session` for session management, and `cors` for Cross-Origin Resource Sharing.
+

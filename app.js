@@ -4,8 +4,10 @@ import expressEjsLayouts from "express-ejs-layouts";
 import session from 'express-session';
 import flash from 'connect-flash';
 import passport from 'passport';
+import cors from 'cors';
 import indexRouter from './routes/index.js';
 import userRouter from './routes/users.js';
+import apiRouter from './routes/api.js';
 import bd from './configs/db.js';
 import passportConfig from './configs/passport.js';
 
@@ -15,12 +17,16 @@ passportConfig(passport);
 // defining stuffs ... 
 const app = express()
 
+// CORS
+app.use(cors());
+
 // EJS and layout
 app.use(expressEjsLayouts);
 app.set('view engine', 'ejs');
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Express session
 app.use(
@@ -49,7 +55,8 @@ app.use(function(req, res, next) {
 //routes 
 app.use('/', indexRouter)
 app.use('/users', userRouter)
+app.use('/api', apiRouter);
 
-const PORT =process.env.PORT || 5000
+const PORT = process.env.PORT || 1890; // Default to 1890 if not set
 
-app.listen(PORT, console.log(`server running on port : ${PORT}`))
+app.listen(PORT, () => console.log(`server running on port : ${PORT}`));
