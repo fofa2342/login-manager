@@ -110,7 +110,7 @@ const userController = {
               res.redirect(`${redirect_uri}${separator}token=${token}`);
             } else {
               // Fallback: redirect to the main app's dashboard
-              const APP_URL = process.env.APP_URL || 'http://localhost:2000';
+              const APP_URL = process.env.APP_URL ;
               const returnTo = `${APP_URL}/dashboard`;
               const callbackUrl = `${APP_URL}/auth/callback?returnTo=${encodeURIComponent(returnTo)}&token=${token}`;
               res.redirect(callbackUrl);
