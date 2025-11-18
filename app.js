@@ -57,6 +57,6 @@ app.use('/', indexRouter)
 app.use('/users', userRouter)
 app.use('/api', apiRouter);
 
-const PORT = process.env.PORT || 1890; // Default to 1890 if not set
+const PORT = process.env.PORT; // Default to 1890 if not set
 
-app.listen(PORT, () => console.log(`server running on port : ${PORT}`));
+app.listen(PORT, () => console.log('server running'));

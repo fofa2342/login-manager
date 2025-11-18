@@ -82,42 +82,42 @@ const userController = {
         }
         return res.redirect(failureRedirect);
       }
-      req.logIn(user, (err) => {
-        if (err) {
-          return next(err);
-        }
-        
-        const payload = {
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email
-          },
-        };
-
-        jwt.sign(
-          payload,
-          process.env.JWT_SECRET,
-          { expiresIn: 3600 },
-          (err, token) => {
-            if (err) {
-              req.flash('error_msg', 'Could not generate token.');
-              return res.redirect('/users/login');
-            }
-
-            if (redirect_uri) {
-              const separator = redirect_uri.includes('?') ? '&' : '?';
-              res.redirect(`${redirect_uri}${separator}token=${token}`);
-            } else {
-              // Fallback: redirect to the main app's dashboard
-              const APP_URL = process.env.APP_URL ;
-              const returnTo = `${APP_URL}/dashboard`;
-              const callbackUrl = `${APP_URL}/auth/callback?returnTo=${encodeURIComponent(returnTo)}&token=${token}`;
-              res.redirect(callbackUrl);
-            }
-          }
-        );
-      });
+            req.logIn(user, (err) => {
+              if (err) {
+                return next(err);
+              }
+              
+              const payload = {
+                user: {
+                  id: user.id,
+                  name: user.name,
+                  email: user.email
+                },
+              };
+      
+              jwt.sign(
+                payload,
+                process.env.JWT_SECRET,
+                { expiresIn: 3600 },
+                (err, token) => {
+                  if (err) {
+                    req.flash('error_msg', 'Could not generate token.');
+                    return res.redirect('/users/login');
+                  }
+      
+                  if (redirect_uri) {
+                    const separator = redirect_uri.includes('?') ? '&' : '?';
+                    res.redirect(`${redirect_uri}${separator}token=${token}`);
+                  } else {
+                    // Fallback: redirect to the main app's dashboard
+                    const APP_URL = process.env.APP_URL ;
+                    const returnTo = `${APP_URL}/dashboard`;
+                    const callbackUrl = `${APP_URL}/auth/callback?returnTo=${encodeURIComponent(returnTo)}&token=${token}`;
+                    res.redirect(callbackUrl);
+                  }
+                }
+              );
+            });
     })(req, res, next);
   },
 
