@@ -41,8 +41,7 @@ app.use(
     cookie: {
       secure: true, // Only send over HTTPS
       httpOnly: true, // Prevent client-side JS access
-      sameSite: 'none', // Allow cross-domain cookies
-      domain: '.vercel.app' // Shared domain
+      sameSite: 'none' // Allow cross-domain cookies
     }
   })
 );
