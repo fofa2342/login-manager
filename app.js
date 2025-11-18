@@ -18,10 +18,13 @@ passportConfig(passport);
 const app = express()
 
 // CORS
-app.use(cors({
-  origin: 'https://marche-pagne.vercel.app',
-  credentials: true
-}));
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://marche-pagne.vercel.app");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  next();
+});
 
 // EJS and layout
 app.use(expressEjsLayouts);
@@ -39,9 +42,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: true, // Only send over HTTPS
-      httpOnly: true, // Prevent client-side JS access
-      sameSite: 'none' // Allow cross-domain cookies
+      httpOnly: true,
+      secure: true, // required on Vercel HTTPS
+      sameSite: "none" // REQUIRED for cross-domain cookies
     }
   })
 );
