@@ -18,7 +18,10 @@ passportConfig(passport);
 const app = express()
 
 // CORS
-app.use(cors());
+app.use(cors({
+  origin: 'https://marche-pagne.vercel.app',
+  credentials: true
+}));
 
 // EJS and layout
 app.use(expressEjsLayouts);
@@ -29,11 +32,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Express session
+app.set('trust proxy', 1);
 app.use(
   session({
     secret: 'secret',
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: true, // Only send over HTTPS
+      httpOnly: true, // Prevent client-side JS access
+      sameSite: 'none', // Allow cross-domain cookies
+      domain: '.vercel.app' // Shared domain
+    }
   })
 );
 
